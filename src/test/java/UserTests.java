@@ -2,7 +2,7 @@ import Homeworks2_2.AccessDeniedException;
 import Homeworks2_2.Main;
 import Homeworks2_2.User;
 import Homeworks2_2.UserNotFoundException;
-import org.hamcrest.Matchers;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -108,15 +108,12 @@ public class UserTests {
     @Test
     @DisplayName("Getting a list of users")
     public void testGetUsers(){
-        //given
-        int expected = 4;
 
         //when
         User[] users = Main.getUsers();
         List<User> list = List.of(users);
 
         //then
-        assertThat(users, arrayWithSize(expected));
         assertThat(list, everyItem(instanceOf(User.class)));
     }
 
@@ -155,16 +152,16 @@ public class UserTests {
     @MethodSource("userDataSource")
     @ParameterizedTest(name = "Get user by username and password (user:  {arguments})")
     public void testGetUserByLoginAndPassword(String login, String mail, String pass, int age) throws UserNotFoundException {
-        //given
-        User user = Main.getUserByLoginAndPassword(login, pass);
 
         //when
-        String actual = user.toString();
+        User user = Main.getUserByLoginAndPassword(login, pass);
 
         //then
-        assertThat(user, Matchers.hasProperty("pass", equalTo(pass)));
-        assertThat(actual, stringContainsInOrder(Arrays.asList(login, mail, Integer.toString(age))));
-
+        assertThat(user, allOf(
+                hasProperty("login", equalTo(login)),
+                hasProperty("pass", equalTo(pass)),
+                instanceOf(User.class)
+        ));
     }
     public static Stream<Arguments> userDataSource(){
         return Stream.of(
@@ -186,7 +183,7 @@ public class UserTests {
         Executable executable = () -> Main.validateUser(user);
 
         //then
-        assertThrows(Exception.class, executable);
+        //assertThrows(Exception.class, executable);
         assertThrowsExactly(AccessDeniedException.class, executable);
     }
 
@@ -218,7 +215,7 @@ public class UserTests {
         };
 
         //then
-        assertThrows(Exception.class, executable);
+        //assertThrows(Exception.class, executable);
         assertThrowsExactly(AccessDeniedException.class, executable);
 
     }
@@ -247,7 +244,7 @@ public class UserTests {
         };
 
         //then
-        assertThrows(Exception.class, executable);
+        //assertThrows(Exception.class, executable);
         assertThrowsExactly(UserNotFoundException.class, executable);
 
     }
